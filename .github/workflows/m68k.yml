@@ -1,0 +1,51 @@
+name: Build m68k libgccjit
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 0 1 * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install packages
+        run: sudo apt-get install help2man libtool-bin
+
+      - name: Setup crosstool-ng
+        run: |
+          git clone https://github.com/crosstool-ng/crosstool-ng
+          cd crosstool-ng
+          ./bootstrap
+          ./configure
+          make
+          sudo make install
+
+      - name: Compile libgccjit
+        run: |
+          cd m68k-unknown-linux-gnu
+          ct-ng defconfig
+          ct-ng build
+
+      - name: Build Debian package
+        run: |
+          cd /home/runner
+          mkdir x-tools/DEBIAN
+          cat > x-tools/DEBIAN/control << EOF
+          Package: gcc-m68k-13
+          Version: 13
+          Architecture: amd64
+          Maintainer: Antoni Boucher <bouanto@zoho.com>
+          Description: gcc 13 cross-compiler for m68k for rustc_codegen_gcc CI
+          EOF
+          dpkg-deb --root-owner-group --build x-tools
+          mv x-tools.deb gcc-m68k-13.deb
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: gcc-m68k-13
+          path: /home/runner/gcc-m68k-13.deb
+          if-no-files-found: error
