@@ -55,13 +55,17 @@ jobs:
           dpkg-deb --root-owner-group --build $dir
           mv $dir.deb gcc-${{ matrix.arch.name }}-13.deb
 
+      - name: Retrieve version
+        id: version
+        run: 'TAG_NAME=$(git rev-parse --short "$GITHUB_SHA")' >> $GITHUB_OUTPUT
+
       - name: Create tag
         if: github.ref == 'refs/heads/master'
         uses: laputansoft/github-tag-action@v4.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           create_annotated_tag: true
-          tag: master-$(git rev-parse --short "$GITHUB_SHA")
+          tag: master-${{ steps.version.outputs.TAG_NAME }}
 
       - name: Create release
         if: github.ref == 'refs/heads/master'
@@ -70,4 +74,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /home/runner/x-tools/gcc-${{ matrix.arch.name }}-13.deb
           asset_name: gcc-${{ matrix.arch.name }}-13.deb
-          tag: master-$(git rev-parse --short "$GITHUB_SHA")
+          tag: master-${{ steps.version.outputs.TAG_NAME }}
