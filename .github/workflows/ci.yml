@@ -57,7 +57,7 @@ jobs:
 
       - name: Retrieve version
         id: version
-        run: 'TAG_NAME=$(git rev-parse --short "$GITHUB_SHA")' >> $GITHUB_OUTPUT
+        run: echo 'TAG_NAME=$(git rev-parse --short "$GITHUB_SHA")' >> $GITHUB_OUTPUT
 
       - name: Create tag
         if: github.ref == 'refs/heads/master'
