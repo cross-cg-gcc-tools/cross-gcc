@@ -1,0 +1,73 @@
+name: Build libgccjit cross-compiler
+
+permissions:
+  contents: write
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - { triple: "m68k-unknown-linux-gnu", name: "m68k" }
+          #- { triple: "sh-unknown-linux-gnu", name: "sh4" }
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install packages
+        run: sudo apt-get install help2man libtool-bin
+
+      - name: Setup crosstool-ng
+        run: |
+          git clone https://github.com/crosstool-ng/crosstool-ng
+          cd crosstool-ng
+          ./bootstrap
+          ./configure
+          make
+          sudo make install
+
+      - name: Compile libgccjit
+        run: |
+          cd ${{ matrix.arch.triple }}
+          ct-ng defconfig
+          ct-ng build
+
+      - name: Build Debian package
+        run: |
+          cd ~/x-tools
+          dir=${{ matrix.arch.triple }}
+          sudo mkdir $dir/DEBIAN
+          sudo chown $USER:$USER $dir/DEBIAN
+          cat > $dir/DEBIAN/control << EOF
+          Package: gcc-${{ matrix.arch.name }}-13
+          Version: 13
+          Architecture: amd64
+          Maintainer: Antoni Boucher <bouanto@zoho.com>
+          Description: gcc 13 cross-compiler for ${{ matrix.arch.name }} for rustc_codegen_gcc CI
+          EOF
+          dpkg-deb --root-owner-group --build $dir
+          mv $dir.deb gcc-${{ matrix.arch.name }}-13.deb
+
+      - name: Create tag
+        if: github.ref == 'refs/heads/master'
+        uses: laputansoft/github-tag-action@v4.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          create_annotated_tag: true
+          tag: master-$(git rev-parse --short "$GITHUB_SHA")
+
+      - name: Create release
+        if: github.ref == 'refs/heads/master'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /home/runner/x-tools/gcc-${{ matrix.arch.name }}-13.deb
+          asset_name: gcc-${{ matrix.arch.name }}-13.deb
+          tag: master-$(git rev-parse --short "$GITHUB_SHA")
