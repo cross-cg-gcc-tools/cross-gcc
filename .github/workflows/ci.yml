@@ -58,7 +58,7 @@ jobs:
 
       - name: Compute tag name
         id: tag_name
-        run: echo "TAG_NAME=$(date +'%F_%T')" >> $GITHUB_OUTPUT
+        run: echo "TAG_NAME=$(date +'%F_%H-%M-%S')" >> $GITHUB_OUTPUT
 
       - name: Create tag
         if: github.ref == 'refs/heads/master'
