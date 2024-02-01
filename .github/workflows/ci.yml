@@ -22,6 +22,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - run: |
+          echo "test" > release
+
+      - name: Create tag
+        uses: laputansoft/github-tag-action@v4.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          create_annotated_tag: true
+          tag: master-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT
+
+      - name: Create release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /home/runner/release
+          asset_name: gcc-${{ matrix.arch.name }}-13.deb
+          tag: master-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT
+
+      - run: |
+          echo "${{ env.GITHUB_RUN_NUMBER }}"
+
+      #- run: |
+          #echo "${{ GITHUB_RUN_NUMBER }}"
+
+      - run: |
+          echo "$GITHUB_RUN_NUMBER"
+
       - name: Install packages
         run: sudo apt-get install help2man libtool-bin
 
