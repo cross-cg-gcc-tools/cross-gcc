@@ -27,6 +27,7 @@ jobs:
 
       - name: Setup crosstool-ng
         run: |
+          env
           git clone https://github.com/crosstool-ng/crosstool-ng
           cd crosstool-ng
           ./bootstrap
