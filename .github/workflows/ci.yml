@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -54,14 +54,14 @@ jobs:
           sudo mkdir $dir/DEBIAN
           sudo chown $USER:$USER $dir/DEBIAN
           cat > $dir/DEBIAN/control << EOF
-          Package: gcc-${{ matrix.arch.name }}-13
-          Version: 13
+          Package: gcc-${{ matrix.arch.name }}-15
+          Version: 15
           Architecture: amd64
           Maintainer: Antoni Boucher <bouanto@zoho.com>
-          Description: gcc 13 cross-compiler for ${{ matrix.arch.name }} for rustc_codegen_gcc CI
+          Description: gcc 15 cross-compiler for ${{ matrix.arch.name }} for rustc_codegen_gcc CI
           EOF
           dpkg-deb --root-owner-group --build $dir
-          mv $dir.deb gcc-${{ matrix.arch.name }}-13.deb
+          mv $dir.deb gcc-${{ matrix.arch.name }}-15.deb
 
       - name: Compute tag name
         id: tag_name
@@ -80,6 +80,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /home/runner/x-tools/gcc-${{ matrix.arch.name }}-13.deb
-          asset_name: gcc-${{ matrix.arch.name }}-13.deb
+          file: /home/runner/x-tools/gcc-${{ matrix.arch.name }}-15.deb
+          asset_name: gcc-${{ matrix.arch.name }}-15.deb
           tag: master-${{ steps.tag_name.outputs.TAG_NAME }}
