@@ -10,7 +10,7 @@ CT_BINUTILS_PLUGINS=y
 CT_GCC_SRC_DEVEL=y
 CT_GCC_DEVEL_URL="https://github.com/antoyo/gcc.git"
 CT_CC_GCC_EXTRA_CONFIG_ARRAY="--enable-host-shared --disable-bootstrap"
-# CT_CC_GCC_USE_LTO is not set
+CT_CC_GCC_USE_LTO=y
 CT_CC_LANG_JIT=y
 CT_COMP_LIBS_EXPAT=y
 CT_ISL_V_0_24=y
