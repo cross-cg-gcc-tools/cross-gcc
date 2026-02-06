@@ -2,12 +2,10 @@
 
 == Dependencies
 
-This requires the git version of https://github.com/crosstool-ng/crosstool-ng[crosstool-ng], at least if you want to build for m68k, since it's not released in the 1.26.0 version.
+This requires the https://github.com/antoyo/gcc-build-tools/tree/dev[dev branch of my gcc-build-tools fork].
 
 == Build instructions
 
-1. Install `crosstool-ng`.
-2. Move to the directory containing the `crosstool-ng` config of your choice: `cd m68k-unknown-linux-gnu`
-2. Generate the config from the default config: `ct-ng defconfig`. This will generate a `.config` file used in the next step.
-3. Build the compiler: `ct-ng build`.
-4. The compiler will be in `$HOME/x-tools/m68k-unknown-linux-gnu/bin`.
+1. Install the dev branch of my fork of `gcc-build-tools`.
+2. Build the compiler: `path/to/gcc-build-tools/build-gcc -a $ARCH -v master` (replace $ARCH by your target from `configs/targets/`, for instance `m68k`).
+4. The compiler will be in `$HOME/xgcc/cross-tool-m68k-gccmaster/bin`.
