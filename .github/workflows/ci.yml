@@ -15,10 +15,10 @@ jobs:
       fail-fast: false
       matrix:
         arch:
-          - { triple: "aarch64-unknown-linux-gnu", name: "aarch64" }
-          - { triple: "arm-unknown-linux-gnueabi", name: "arm" }
-          - { triple: "m68k-unknown-linux-gnu", name: "m68k" }
-          #- { triple: "sh-unknown-linux-gnu", name: "sh4" }
+          - { name: "arm64" }
+          - { name: "arm" }
+          - { name: "m68k" }
+          #- { name: "sh4" }
 
     steps:
       - uses: actions/checkout@v3
@@ -33,25 +33,21 @@ jobs:
       - name: Install packages
         run: sudo apt-get install help2man libtool-bin
 
-      - name: Setup crosstool-ng
+      - name: Setup gcc-build-tools
         run: |
-          git clone https://github.com/crosstool-ng/crosstool-ng
-          cd crosstool-ng
-          ./bootstrap
-          ./configure
-          make
-          sudo make install
+          git clone --branch dev --single-branch https://github.com/antoyo/gcc-build-tools
+          cd gcc-build-tools
+          # Add build-gcc to $PATH
+          pwd >> $GITHUB_PATH
 
       - name: Compile libgccjit
         run: |
-          cd ${{ matrix.arch.triple }}
-          ct-ng defconfig
-          ct-ng build
+          build-gcc -a ${{ matrix.arch.name }} -v master
 
       - name: Build Debian package
         run: |
-          cd ~/x-tools
-          dir=${{ matrix.arch.triple }}
+          cd ~/xgcc
+          dir=cross-tool-${{ matrix.arch.name }}-gccmaster
           sudo mkdir $dir/DEBIAN
           sudo chown $USER:$USER $dir/DEBIAN
           cat > $dir/DEBIAN/control << EOF
@@ -81,6 +77,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /home/runner/x-tools/gcc-${{ matrix.arch.name }}-15.deb
+          file: /home/runner/xgcc/gcc-${{ matrix.arch.name }}-15.deb
           asset_name: gcc-${{ matrix.arch.name }}-15.deb
           tag: master-${{ steps.tag_name.outputs.TAG_NAME }}
