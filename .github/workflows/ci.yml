@@ -46,8 +46,13 @@ jobs:
 
       - name: Build Debian package
         run: |
-          cd ~/xgcc
           dir=cross-tool-${{ matrix.arch.name }}-gccmaster
+
+          cd ~/xgcc
+          pushd $dir/bin
+          ln -s ${{ matrix.arch.name }}-unknown-linux-gnu-gcc ${{ matrix.arch.name }}-unknown-linux-gnu-cc
+          popd
+
           sudo mkdir $dir/DEBIAN
           sudo chown $USER:$USER $dir/DEBIAN
           cat > $dir/DEBIAN/control << EOF
