@@ -49,7 +49,7 @@ jobs:
           dir=cross-tool-${{ matrix.arch.name }}-gccmaster
 
           cd ~/xgcc
-          pushd $dir/bin
+          pushd $dir/usr/bin
           ln -s ${{ matrix.arch.name }}-unknown-linux-gnu-gcc ${{ matrix.arch.name }}-unknown-linux-gnu-cc
           popd
 
