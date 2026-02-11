@@ -35,7 +35,7 @@ jobs:
 
       - name: Setup crosstool-ng
         run: |
-          git clone https://github.com/crosstool-ng/crosstool-ng
+          git clone -b fix/libatomic-bug https://github.com/antoyo/crosstool-ng
           cd crosstool-ng
           ./bootstrap
           ./configure
