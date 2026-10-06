@@ -3,6 +3,8 @@ CT_EXPERIMENTAL=y
 CT_PREFIX_DIR="${CT_PREFIX:-${HOME}/x-tools}/${CT_HOST:+HOST-${CT_HOST}/}${CT_TARGET}/usr"
 CT_DOWNLOAD_AGENT_CURL=y
 CT_DOWNLOAD_CURL_OPTIONS="--location --retry 3 --fail --silent"
+CT_USE_MIRROR=y
+CT_MIRROR_BASE_URL="https://mirrors.kernel.org/gnu"
 # CT_LOG_PROGRESS_BAR is not set
 CT_EXTRA_CFLAGS_FOR_BUILD="-g0"
 CT_EXTRA_CFLAGS_FOR_HOST="-g0"
